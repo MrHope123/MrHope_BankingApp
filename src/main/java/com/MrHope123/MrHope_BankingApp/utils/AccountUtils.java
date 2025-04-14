@@ -12,18 +12,25 @@ public class AccountUtils {
 
     public static final String ACCOUNT_CREATION_SUCCESS_MESSAGE="Account has been successfully created";
 
+    public static  final String ACCOUNT_NOT_EXIST_CODE ="003";
 
-    public static String generateAccountNumber(){
+    public static final String ACCOUNT_NOT_EXIST_MESSAGE="User with the provided account number doesnt exist";
+
+    public static  final  String ACCOUNT_FOUND_CODE = "004";
+
+    public static final String ACCOUNT_FOUND_MESSAGE= "User account found";
+
+    public static String generateAccountNumber() {
         /*
          * 2025 + randomSixDigits
          * */
-        Year currentYear =Year.now();
-        int min = 1000000;
+        Year currentYear = Year.now();
+        int min = 100000; // Changed to 6 digits
         int max = 999999;
 
         //generate random number
 
-        int randNumber = (int)Math.floor(Math.random()* (max - min + 1) + min);
+        int randNumber = (int) Math.floor(Math.random() * (max - min + 1) + min);
 
         //Convert current year and random number to String
 
