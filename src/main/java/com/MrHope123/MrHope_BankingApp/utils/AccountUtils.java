@@ -20,6 +20,10 @@ public class AccountUtils {
 
     public static final String ACCOUNT_FOUND_MESSAGE= "User account found";
 
+    public static final String ACCOUNT_CREDIT_SUCCESS_CODE="005";
+
+    public static final String ACCOUNT_CREDIT_SUCCESS_MESSAGE="User account has been successfully credited";
+
     public static String generateAccountNumber() {
         /*
          * 2025 + randomSixDigits

@@ -1,6 +1,7 @@
 package com.MrHope123.MrHope_BankingApp.controller;
 
 import com.MrHope123.MrHope_BankingApp.dto.BankResponse;
+import com.MrHope123.MrHope_BankingApp.dto.CreditDebitRequest;
 import com.MrHope123.MrHope_BankingApp.dto.EnquiryRequest;
 import com.MrHope123.MrHope_BankingApp.dto.UserRequest;
 import com.MrHope123.MrHope_BankingApp.service.impl.UserService;
@@ -27,5 +28,10 @@ public class UserController {
     @GetMapping("/nameEnquiry")
     public String nameEnquiry(@RequestBody EnquiryRequest enquiryRequest){
         return userService.nameEnquiry(enquiryRequest);
+    }
+
+    @PostMapping("/credit")
+    public BankResponse creditAccount(@RequestBody CreditDebitRequest creditDebitRequest){
+        return userService.creditDebitAccount(creditDebitRequest);
     }
 }
