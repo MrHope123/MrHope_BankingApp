@@ -15,9 +15,6 @@ public class UserServiceImpl implements UserService{
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    EmailService emailService;
-
     @Override
     public BankResponse createAccount(UserRequest userRequest) {
         /*
@@ -50,16 +47,6 @@ public class UserServiceImpl implements UserService{
 
         User savedUser = userRepository.save(newUser);
 
-        EmailDetails emailDetails = EmailDetails.builder()
-                .recipient(savedUser.getEmail())
-                .subject("ACCOUNT CREATION")
-                .messageBody("Congratulations! Your account has been successfully created.\nYour Account Details: \n"+
-                        "Account name: "+ savedUser.getFirstName()+" "+ savedUser.getLastName()+" "+ savedUser.getOtherName()+"\nAccount Number: "+savedUser.getAccountNumber())
-
-                .build();
-
-        emailService.sendEmailAlert(emailDetails);
-
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_SUCCESS_MESSAGE)
@@ -79,7 +66,7 @@ public class UserServiceImpl implements UserService{
         if (!isAccountExist){
             return BankResponse.builder()
                     .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
-                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE)
+                    .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
                     .accountInfo(null)
                     .build();
         }
@@ -119,7 +106,7 @@ public class UserServiceImpl implements UserService{
         if(!isAccountExist){
             return  BankResponse.builder()
                     .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
-                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE)
+                    .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
                     .accountInfo(null)
                     .build();
         }
