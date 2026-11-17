@@ -41,6 +41,16 @@ public class BankException extends RuntimeException {
                 AccountUtils.INSUFFICIENT_FUNDS_CODE, AccountUtils.INSUFFICIENT_FUNDS_MESSAGE);
     }
 
+    public static BankException invalidCredentials() {
+        return new BankException(HttpStatus.UNAUTHORIZED,
+                AccountUtils.INVALID_CREDENTIALS_CODE, AccountUtils.INVALID_CREDENTIALS_MESSAGE);
+    }
+
+    public static BankException accessDenied() {
+        return new BankException(HttpStatus.FORBIDDEN,
+                AccountUtils.ACCESS_DENIED_CODE, AccountUtils.ACCESS_DENIED_MESSAGE);
+    }
+
     public static BankException sameAccountTransfer() {
         return new BankException(HttpStatus.BAD_REQUEST,
                 AccountUtils.SAME_ACCOUNT_TRANSFER_CODE, AccountUtils.SAME_ACCOUNT_TRANSFER_MESSAGE);

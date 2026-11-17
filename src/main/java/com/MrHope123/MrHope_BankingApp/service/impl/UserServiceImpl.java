@@ -6,6 +6,7 @@ import com.MrHope123.MrHope_BankingApp.exception.BankException;
 import com.MrHope123.MrHope_BankingApp.repository.UserRepository;
 import com.MrHope123.MrHope_BankingApp.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService {
                 .accountNumber(generateUniqueAccountNumber())
                 .accountBalance(BigDecimal.ZERO)
                 .email(email)
+                .password(passwordEncoder.encode(userRequest.getPassword()))
                 .phoneNumber(userRequest.getPhoneNumber())
                 .alternativePhoneNumber(userRequest.getAlternativePhoneNumber())
                 .status("ACTIVE")
@@ -51,26 +54,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public BankResponse balanceEnquiry(String accountNumber) {
+    public BankResponse balanceEnquiry(String callerEmail, String accountNumber) {
         User foundUser = userRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(BankException::accountNotFound);
+        requireOwner(foundUser, callerEmail);
 
         return accountResponse(AccountUtils.ACCOUNT_FOUND_CODE, AccountUtils.ACCOUNT_FOUND_MESSAGE, foundUser);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public String nameEnquiry(String accountNumber) {
+    public String nameEnquiry(String callerEmail, String accountNumber) {
         User foundUser = userRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(BankException::accountNotFound);
+        requireOwner(foundUser, callerEmail);
 
         return fullName(foundUser);
     }
 
     @Override
     @Transactional
-    public BankResponse creditAccount(CreditDebitRequest request) {
+    public BankResponse creditAccount(String callerEmail, CreditDebitRequest request) {
         User user = lockAccount(request.getAccountNumber());
+        requireOwner(user, callerEmail);
 
         user.setAccountBalance(user.getAccountBalance().add(request.getAmount()));
         userRepository.save(user);
@@ -81,8 +87,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public BankResponse debitAccount(CreditDebitRequest request) {
+    public BankResponse debitAccount(String callerEmail, CreditDebitRequest request) {
         User user = lockAccount(request.getAccountNumber());
+        requireOwner(user, callerEmail);
 
         if (user.getAccountBalance().compareTo(request.getAmount()) < 0) {
             throw BankException.insufficientFunds();
@@ -97,13 +104,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public BankResponse transfer(TransferRequest request) {
+    public BankResponse transfer(String callerEmail, TransferRequest request) {
         String sourceNumber = request.getSourceAccountNumber();
         String destinationNumber = request.getDestinationAccountNumber();
 
         if (sourceNumber.equals(destinationNumber)) {
             throw BankException.sameAccountTransfer();
         }
+
+        // Check ownership of the source before anything else, so a caller who does not own it
+        // learns nothing about the destination. An account never changes owner, so this
+        // unlocked read stays valid once the rows are locked below.
+        User sourcePreview = userRepository.findByAccountNumber(sourceNumber)
+                .orElseThrow(BankException::accountNotFound);
+        requireOwner(sourcePreview, callerEmail);
 
         // Always lock in the same order so two opposite transfers cannot deadlock.
         boolean sourceFirst = sourceNumber.compareTo(destinationNumber) < 0;
@@ -123,6 +137,14 @@ public class UserServiceImpl implements UserService {
 
         return accountResponse(AccountUtils.TRANSFER_SUCCESS_CODE,
                 AccountUtils.TRANSFER_SUCCESS_MESSAGE, source);
+    }
+
+    /** The ownership rule: only the customer the account belongs to may touch it. */
+    private void requireOwner(User account, String callerEmail) {
+        if (callerEmail == null || account.getEmail() == null
+                || !account.getEmail().equalsIgnoreCase(callerEmail)) {
+            throw BankException.accessDenied();
+        }
     }
 
     private User lockAccount(String accountNumber) {

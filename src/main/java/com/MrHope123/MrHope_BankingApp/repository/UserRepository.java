@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
      Optional<User> findByAccountNumber(String accountNumber);
 
+     Optional<User> findByEmail(String email);
+
      /**
       * Loads the account with a row lock so concurrent credits, debits and
       * transfers on the same account run one after another instead of

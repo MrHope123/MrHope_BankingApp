@@ -44,6 +44,18 @@ public class AccountUtils {
 
     public static final String VALIDATION_ERROR_MESSAGE="Request validation failed";
 
+    public static final String INVALID_CREDENTIALS_CODE="011";
+
+    public static final String INVALID_CREDENTIALS_MESSAGE="Invalid email or password";
+
+    public static final String ACCESS_DENIED_CODE="012";
+
+    public static final String ACCESS_DENIED_MESSAGE="You do not have access to this account";
+
+    public static final String UNAUTHENTICATED_CODE="013";
+
+    public static final String UNAUTHENTICATED_MESSAGE="Authentication is required: send a valid Bearer token";
+
     public static String generateAccountNumber() {
         /*
          * 2025 + randomSixDigits
