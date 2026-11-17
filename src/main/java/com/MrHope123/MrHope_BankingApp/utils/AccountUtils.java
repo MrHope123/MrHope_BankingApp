@@ -24,6 +24,26 @@ public class AccountUtils {
 
     public static final String ACCOUNT_CREDIT_SUCCESS_MESSAGE="User account has been successfully credited";
 
+    public static final String ACCOUNT_DEBIT_SUCCESS_CODE="006";
+
+    public static final String ACCOUNT_DEBIT_SUCCESS_MESSAGE="User account has been successfully debited";
+
+    public static final String INSUFFICIENT_FUNDS_CODE="007";
+
+    public static final String INSUFFICIENT_FUNDS_MESSAGE="Insufficient funds for this transaction";
+
+    public static final String TRANSFER_SUCCESS_CODE="008";
+
+    public static final String TRANSFER_SUCCESS_MESSAGE="Transfer completed successfully";
+
+    public static final String SAME_ACCOUNT_TRANSFER_CODE="009";
+
+    public static final String SAME_ACCOUNT_TRANSFER_MESSAGE="Cannot transfer to the same account";
+
+    public static final String VALIDATION_ERROR_CODE="010";
+
+    public static final String VALIDATION_ERROR_MESSAGE="Request validation failed";
+
     public static String generateAccountNumber() {
         /*
          * 2025 + randomSixDigits

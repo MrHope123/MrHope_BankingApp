@@ -27,8 +27,11 @@ public class User {
     private String gender;
     private String address;
     private String stateOfOrigin;
+    @Column(unique = true, nullable = false)
     private String accountNumber;
+    @Column(precision = 19, scale = 2)
     private BigDecimal accountBalance;
+    @Column(unique = true, nullable = false)
     private String email;
     private String phoneNumber;
     private String alternativePhoneNumber;
